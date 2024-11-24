@@ -1,29 +1,16 @@
-const Media = require("../modules/mediaModule");
-// const { logger } = require('../loggerService');
+const Media = require('../modules/mediaModule');
+const logger = require('../loggerService');
 
 
 exports.getAllMedia = async (request, response) => {
     try {
     const mediaList = await Media.find();
-    // logger({
-    //     messageString: 'This is a log message',
-    //     additionalInfo: {
-    //       error: null,
-    //       request: additionalInfo?.request 
-    //       ? {
-    //         user: additionalInfo?.request?.user,
-    //         rawHeaders: additionalInfo?.request?.rawHeaders,
-    //         reqheader: additionalInfo?.request?.headers,
-    //         reqBody: additionalInfo?.request?.body,
-    //         reqParam: additionalInfo?.request?.params,
-    //         reqQuery: additionalInfo?.request?.query,
-    //       },
-    //     },
-    // })
     response.status(200).json(mediaList);
+    logger.info('got all media');
     } catch (error) {
       response.status(500).json({ message: error.message });
-    }
+      logger.error('error getting all media:', error);
+}
 };
 
 
@@ -31,7 +18,7 @@ function validateMediaName(mediaName){
 
     const regex = /[!@#$%^&*()\-+={}[\]:;"'<>,.?\/|\\]/;
     if (regex.test(mediaName)){
-        console.log("name validation failed");
+        console.log('name validation failed');
         return false;
     }
     return true;
@@ -42,14 +29,14 @@ async function checkDuplicateMediaName(mediaName){
     try {
         const media = await Media.findOne({ mediaName: mediaName });
         if (media) {
-            console.log("name already there");
+            console.log('name already there');
             return false;
         } else {
-            console.log("name is not there");
+            console.log('name is not there');
             return true;
         }
     } catch (error) {
-            console.log(error);
+            logger.error('error checking duplicate media name:', error);
             return false;
     }
 
@@ -72,6 +59,8 @@ exports.getByMediaName = async (request, response) => {
     response.status(200).json(media);
     } catch (error) {
         response.status(500).json({ message: error.message });
+        logger.error('error finding media by name:', error);
+
     }
 };
 
@@ -85,6 +74,7 @@ exports.getMediaById = async (request, response) => {
     response.status(200).json(media);
     } catch (error) {
       response.status(500).json({ message: error.message });
+      logger.error('error finding media by id:', error);
     }
 };
 
@@ -109,6 +99,7 @@ exports.createMedia = async (request, response) => {
     } catch (error) {
         // If an error occurs, respond with an error message
         response.status(500).json({ message: error.message });
+        logger.error('error creating media record:', error);
     }   
 
 
@@ -137,7 +128,8 @@ exports.updateMedia = async (request, response) => {
     } catch (error) {
         // If an error occurs, respond with an error message
         response.status(500).json({ message: error.message });
-    }
+        logger.error('error updating media record:', error);
+    }   
 };
 
 
@@ -158,6 +150,7 @@ exports.deleteMedia = async (request, response) => {
     } catch (error) {
         // If an error occurs, respond with an error message
         response.status(500).json({ message: error.message });
-    }
+        logger.error('error deleting media record:', error);
+    }   
 };
  
